@@ -121,7 +121,7 @@ export const RecipeForm = ({ onSave, onCancel, initialRecipe }: RecipeFormProps)
               placeholder="18"
               min={0}
               max={50}
-              step={0.1}
+              step={0.5}
               unit="g"
             />
             
@@ -132,7 +132,7 @@ export const RecipeForm = ({ onSave, onCancel, initialRecipe }: RecipeFormProps)
               placeholder="36"
               min={0}
               max={100}
-              step={0.1}
+              step={0.5}
               unit="g"
             />
           </div>
@@ -145,7 +145,7 @@ export const RecipeForm = ({ onSave, onCancel, initialRecipe }: RecipeFormProps)
               placeholder="30"
               min={0}
               max={120}
-              step={1}
+              step={0.5}
               unit="sec"
             />
             

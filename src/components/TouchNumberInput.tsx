@@ -21,7 +21,7 @@ export const TouchNumberInput = ({
   placeholder,
   min = 0,
   max = 999,
-  step = 1,
+  step = 0.5,
   unit,
   className
 }: TouchNumberInputProps) => {
