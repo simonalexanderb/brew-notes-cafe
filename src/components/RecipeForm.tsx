@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { StarRating } from "./StarRating";
+import { CoffeeRating } from "./CoffeeRating";
+import { TouchNumberInput } from "./TouchNumberInput";
 import { Camera, Save } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -112,72 +113,66 @@ export const RecipeForm = ({ onSave, onCancel, initialRecipe }: RecipeFormProps)
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="inputGrams">Input (g)</Label>
-              <Input
-                id="inputGrams"
-                type="number"
-                value={formData.inputGrams || ""}
-                onChange={(e) => setFormData(prev => ({ ...prev, inputGrams: Number(e.target.value) }))}
-                placeholder="18"
-                min="0"
-                step="0.1"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="outputGrams">Output (g)</Label>
-              <Input
-                id="outputGrams"
-                type="number"
-                value={formData.outputGrams || ""}
-                onChange={(e) => setFormData(prev => ({ ...prev, outputGrams: Number(e.target.value) }))}
-                placeholder="36"
-                min="0"
-                step="0.1"
-              />
-            </div>
+          <div className="space-y-4">
+            <TouchNumberInput
+              value={formData.inputGrams}
+              onChange={(value) => setFormData(prev => ({ ...prev, inputGrams: value }))}
+              label="Input Coffee"
+              placeholder="18"
+              min={0}
+              max={50}
+              step={0.1}
+              unit="g"
+            />
+            
+            <TouchNumberInput
+              value={formData.outputGrams}
+              onChange={(value) => setFormData(prev => ({ ...prev, outputGrams: value }))}
+              label="Output Espresso"
+              placeholder="36"
+              min={0}
+              max={100}
+              step={0.1}
+              unit="g"
+            />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="brewingTime">Time (seconds)</Label>
-              <Input
-                id="brewingTime"
-                type="number"
-                value={formData.brewingTime || ""}
-                onChange={(e) => setFormData(prev => ({ ...prev, brewingTime: Number(e.target.value) }))}
-                placeholder="30"
-                min="0"
-              />
-            </div>
+          <div className="space-y-4">
+            <TouchNumberInput
+              value={formData.brewingTime}
+              onChange={(value) => setFormData(prev => ({ ...prev, brewingTime: value }))}
+              label="Brewing Time"
+              placeholder="30"
+              min={0}
+              max={120}
+              step={1}
+              unit="sec"
+            />
+            
             <div className="space-y-2">
               <Label htmlFor="grindSize">Grind Size</Label>
               <Input
                 id="grindSize"
                 value={formData.grindSize}
                 onChange={(e) => setFormData(prev => ({ ...prev, grindSize: e.target.value }))}
-                placeholder="Fine"
+                placeholder="Fine, Medium, Coarse..."
+                className="h-12 text-lg border-coffee-light focus:ring-coffee-medium"
               />
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Taste Rating</Label>
-              <StarRating
-                rating={formData.tasteRating}
-                onRatingChange={(rating) => setFormData(prev => ({ ...prev, tasteRating: rating }))}
-              />
-            </div>
+          <div className="space-y-6">
+            <CoffeeRating
+              rating={formData.tasteRating}
+              onRatingChange={(rating) => setFormData(prev => ({ ...prev, tasteRating: rating }))}
+              label="Taste Quality"
+            />
             
-            <div className="space-y-2">
-              <Label>Flavor Notes Rating</Label>
-              <StarRating
-                rating={formData.flavorNotesRating}
-                onRatingChange={(rating) => setFormData(prev => ({ ...prev, flavorNotesRating: rating }))}
-              />
-            </div>
+            <CoffeeRating
+              rating={formData.flavorNotesRating}
+              onRatingChange={(rating) => setFormData(prev => ({ ...prev, flavorNotesRating: rating }))}
+              label="Flavor Complexity"
+            />
           </div>
 
           <div className="flex gap-3 pt-4">

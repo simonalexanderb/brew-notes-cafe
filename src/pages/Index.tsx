@@ -55,6 +55,10 @@ const Index = () => {
     setShowForm(false);
   };
 
+  const handleDeleteRecipe = (recipeId: string) => {
+    setRecipes(prev => prev.filter(recipe => recipe.id !== recipeId));
+  };
+
   const handleEditRecipe = (recipe: Recipe) => {
     setEditingRecipe(recipe);
     setShowForm(true);
@@ -132,6 +136,7 @@ const Index = () => {
                 key={recipe.id}
                 recipe={recipe}
                 onClick={() => handleEditRecipe(recipe)}
+                onDelete={() => handleDeleteRecipe(recipe.id)}
               />
             ))}
           </div>

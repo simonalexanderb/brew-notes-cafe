@@ -1,7 +1,9 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { StarRating } from "./StarRating";
-import { Timer, Coffee, Scale } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CoffeeRating } from "./CoffeeRating";
+import { Timer, Coffee, Scale, Trash2, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface Recipe {
   id: string;
@@ -18,20 +20,40 @@ interface Recipe {
 interface RecipeCardProps {
   recipe: Recipe;
   onClick?: () => void;
+  onDelete?: () => void;
   className?: string;
 }
 
-export const RecipeCard = ({ recipe, onClick, className }: RecipeCardProps) => {
+export const RecipeCard = ({ recipe, onClick, onDelete, className }: RecipeCardProps) => {
+  const [showActions, setShowActions] = useState(false);
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`Delete "${recipe.beanName}" recipe?`)) {
+      onDelete?.();
+    }
+  };
   return (
     <Card 
       className={cn(
-        "overflow-hidden shadow-card hover:shadow-soft transition-all duration-300 cursor-pointer",
-        "border-0 bg-card/80 backdrop-blur-sm",
+        "overflow-hidden shadow-card hover:shadow-soft transition-all duration-300 cursor-pointer relative",
+        "border-0 bg-card/80 backdrop-blur-sm group",
         className
       )}
       onClick={onClick}
     >
       <CardContent className="p-0">
+        {/* Delete button */}
+        <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button
+            variant="destructive"
+            size="icon"
+            onClick={handleDeleteClick}
+            className="h-8 w-8 rounded-full shadow-lg"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
         {recipe.packageImage && (
           <div className="aspect-[4/3] overflow-hidden bg-coffee-light">
             <img 
@@ -62,14 +84,22 @@ export const RecipeCard = ({ recipe, onClick, className }: RecipeCardProps) => {
             </div>
           </div>
           
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Taste</span>
-              <StarRating rating={recipe.tasteRating} readonly size="sm" />
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <CoffeeRating 
+                rating={recipe.tasteRating} 
+                readonly 
+                size="sm" 
+                label="Taste"
+              />
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Flavor</span>
-              <StarRating rating={recipe.flavorNotesRating} readonly size="sm" />
+            <div className="space-y-1">
+              <CoffeeRating 
+                rating={recipe.flavorNotesRating} 
+                readonly 
+                size="sm" 
+                label="Flavor Notes"
+              />
             </div>
           </div>
         </div>
