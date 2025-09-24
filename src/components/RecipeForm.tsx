@@ -1,0 +1,208 @@
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { StarRating } from "./StarRating";
+import { Camera, Save } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface Recipe {
+  id: string;
+  beanName: string;
+  packageImage?: string;
+  inputGrams: number;
+  outputGrams: number;
+  brewingTime: number;
+  grindSize: string;
+  tasteRating: number;
+  flavorNotesRating: number;
+}
+
+interface RecipeFormProps {
+  onSave: (recipe: Omit<Recipe, 'id'>) => void;
+  onCancel: () => void;
+  initialRecipe?: Recipe;
+}
+
+export const RecipeForm = ({ onSave, onCancel, initialRecipe }: RecipeFormProps) => {
+  const [formData, setFormData] = useState({
+    beanName: initialRecipe?.beanName || "",
+    packageImage: initialRecipe?.packageImage || "",
+    inputGrams: initialRecipe?.inputGrams || 0,
+    outputGrams: initialRecipe?.outputGrams || 0,
+    brewingTime: initialRecipe?.brewingTime || 0,
+    grindSize: initialRecipe?.grindSize || "",
+    tasteRating: initialRecipe?.tasteRating || 0,
+    flavorNotesRating: initialRecipe?.flavorNotesRating || 0,
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.beanName.trim()) return;
+    
+    onSave(formData);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData(prev => ({
+          ...prev,
+          packageImage: e.target?.result as string
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const isValid = formData.beanName.trim() && formData.inputGrams > 0 && formData.outputGrams > 0;
+
+  return (
+    <Card className="w-full max-w-md mx-auto shadow-soft border-0 bg-card/95 backdrop-blur-sm">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl font-semibold text-center">
+          {initialRecipe ? 'Edit Recipe' : 'New Recipe'}
+        </CardTitle>
+      </CardHeader>
+      
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="beanName">Bean Name</Label>
+            <Input
+              id="beanName"
+              value={formData.beanName}
+              onChange={(e) => setFormData(prev => ({ ...prev, beanName: e.target.value }))}
+              placeholder="e.g., Ethiopian Yirgacheffe"
+              className="border-coffee-light focus:ring-coffee-medium"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Package Image</Label>
+            <div className="flex flex-col gap-2">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+                id="image-upload"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => document.getElementById('image-upload')?.click()}
+                className="justify-start gap-2"
+              >
+                <Camera className="h-4 w-4" />
+                {formData.packageImage ? 'Change Image' : 'Add Image'}
+              </Button>
+              {formData.packageImage && (
+                <div className="aspect-[4/3] max-w-32 overflow-hidden rounded-md">
+                  <img 
+                    src={formData.packageImage} 
+                    alt="Package preview"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="inputGrams">Input (g)</Label>
+              <Input
+                id="inputGrams"
+                type="number"
+                value={formData.inputGrams || ""}
+                onChange={(e) => setFormData(prev => ({ ...prev, inputGrams: Number(e.target.value) }))}
+                placeholder="18"
+                min="0"
+                step="0.1"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="outputGrams">Output (g)</Label>
+              <Input
+                id="outputGrams"
+                type="number"
+                value={formData.outputGrams || ""}
+                onChange={(e) => setFormData(prev => ({ ...prev, outputGrams: Number(e.target.value) }))}
+                placeholder="36"
+                min="0"
+                step="0.1"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="brewingTime">Time (seconds)</Label>
+              <Input
+                id="brewingTime"
+                type="number"
+                value={formData.brewingTime || ""}
+                onChange={(e) => setFormData(prev => ({ ...prev, brewingTime: Number(e.target.value) }))}
+                placeholder="30"
+                min="0"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="grindSize">Grind Size</Label>
+              <Input
+                id="grindSize"
+                value={formData.grindSize}
+                onChange={(e) => setFormData(prev => ({ ...prev, grindSize: e.target.value }))}
+                placeholder="Fine"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Taste Rating</Label>
+              <StarRating
+                rating={formData.tasteRating}
+                onRatingChange={(rating) => setFormData(prev => ({ ...prev, tasteRating: rating }))}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Flavor Notes Rating</Label>
+              <StarRating
+                rating={formData.flavorNotesRating}
+                onRatingChange={(rating) => setFormData(prev => ({ ...prev, flavorNotesRating: rating }))}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onCancel}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={!isValid}
+              className={cn(
+                "flex-1 gap-2",
+                "bg-gradient-coffee hover:opacity-90 text-primary-foreground"
+              )}
+            >
+              <Save className="h-4 w-4" />
+              Save Recipe
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+};
