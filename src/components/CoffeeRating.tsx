@@ -20,30 +20,49 @@ export const CoffeeRating = ({
 }: CoffeeRatingProps) => {
   const sizes = {
     sm: "h-4 w-4",
-    md: "h-5 w-5", 
-    lg: "h-6 w-6"
+    md: "h-5 w-5",
+    lg: "h-6 w-6",
   };
 
   const getIntensity = (beanIndex: number) => {
     if (beanIndex <= rating) {
       const intensity = (beanIndex / 5) * 100;
-      return `hsl(25 ${Math.min(45 + intensity * 0.3, 65)}% ${Math.max(20, 40 - intensity * 0.2)}%)`;
+      return `hsl(25 ${Math.min(45 + intensity * 0.3, 65)}% ${Math.max(
+        20,
+        40 - intensity * 0.2
+      )}%)`;
     }
     return "hsl(var(--muted-foreground))";
   };
+
+  // Label-Logik für Geschmack und Aromen
+  let ratingLabel = "";
+  if (label?.toLowerCase().includes("geschmacksnoten")) {
+    // Flavor Complexity
+    ratingLabel =
+      [
+        "Fruchtig/Frisch",
+        "Leicht Fruchtig",
+        "Schokoladig",
+        "Nussig",
+        "Sehr Nussig",
+      ][Math.max(0, rating - 1)] || "Nicht bewertet";
+  } else if (label?.toLowerCase().includes("wertung")) {
+    // Taste Quality
+    ratingLabel =
+      ["Schlecht", "Geht so", "Okay", "Lecker", "Super"][
+        Math.max(0, rating - 1)
+      ] || "Nicht bewertet";
+  } else {
+    ratingLabel = rating === 0 ? "Nicht bewertet" : rating.toString();
+  }
 
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">{label}</span>
-        <span className="text-xs text-muted-foreground">
-          {rating === 0 ? "Not rated" : 
-           rating <= 2 ? "Poor" :
-           rating <= 3 ? "Fair" :
-           rating <= 4 ? "Good" : "Excellent"}
-        </span>
+        <span className="text-xs text-muted-foreground">{ratingLabel}</span>
       </div>
-      
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((bean) => (
           <Coffee
@@ -55,13 +74,12 @@ export const CoffeeRating = ({
             )}
             style={{
               color: getIntensity(bean),
-              fill: bean <= rating ? getIntensity(bean) : "transparent"
+              fill: bean <= rating ? getIntensity(bean) : "transparent",
             }}
             onClick={() => !readonly && onRatingChange?.(bean)}
           />
         ))}
       </div>
-      
       {!readonly && (
         <div className="flex gap-1">
           <button

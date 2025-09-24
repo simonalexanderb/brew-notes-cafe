@@ -12,7 +12,7 @@ interface Recipe {
   inputGrams: number;
   outputGrams: number;
   brewingTime: number;
-  grindSize: string;
+  grindSize: number;
   tasteRating: number;
   flavorNotesRating: number;
 }
@@ -24,7 +24,12 @@ interface RecipeCardProps {
   className?: string;
 }
 
-export const RecipeCard = ({ recipe, onClick, onDelete, className }: RecipeCardProps) => {
+export const RecipeCard = ({
+  recipe,
+  onClick,
+  onDelete,
+  className,
+}: RecipeCardProps) => {
   const [showActions, setShowActions] = useState(false);
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -34,7 +39,7 @@ export const RecipeCard = ({ recipe, onClick, onDelete, className }: RecipeCardP
     }
   };
   return (
-    <Card 
+    <Card
       className={cn(
         "overflow-hidden shadow-card hover:shadow-soft transition-all duration-300 cursor-pointer relative",
         "border-0 bg-card/80 backdrop-blur-sm group",
@@ -56,20 +61,20 @@ export const RecipeCard = ({ recipe, onClick, onDelete, className }: RecipeCardP
         </div>
         {recipe.packageImage && (
           <div className="aspect-[4/3] overflow-hidden bg-coffee-light">
-            <img 
-              src={recipe.packageImage} 
+            <img
+              src={recipe.packageImage}
               alt={recipe.beanName}
               className="w-full h-full object-cover"
             />
           </div>
         )}
-        
+
         <div className="p-4 space-y-3">
           <h3 className="font-semibold text-lg text-foreground truncate">
             {recipe.beanName}
           </h3>
-          
-          <div className="grid grid-cols-3 gap-2 text-sm text-muted-foreground">
+
+          <div className="grid grid-cols-4 gap-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Scale className="h-3 w-3" />
               <span>{recipe.inputGrams}g</span>
@@ -82,23 +87,26 @@ export const RecipeCard = ({ recipe, onClick, onDelete, className }: RecipeCardP
               <Timer className="h-3 w-3" />
               <span>{recipe.brewingTime}s</span>
             </div>
+            <div className="flex items-center gap-1">
+              <span>Grind: {recipe.grindSize}</span>
+            </div>
           </div>
-          
+
           <div className="space-y-3">
             <div className="space-y-1">
-              <CoffeeRating 
-                rating={recipe.tasteRating} 
-                readonly 
-                size="sm" 
-                label="Taste"
+              <CoffeeRating
+                rating={recipe.tasteRating}
+                readonly
+                size="sm"
+                label="Wertung"
               />
             </div>
             <div className="space-y-1">
-              <CoffeeRating 
-                rating={recipe.flavorNotesRating} 
-                readonly 
-                size="sm" 
-                label="Flavor Notes"
+              <CoffeeRating
+                rating={recipe.flavorNotesRating}
+                readonly
+                size="sm"
+                label="Geschmacksnoten"
               />
             </div>
           </div>

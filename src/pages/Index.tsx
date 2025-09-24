@@ -4,59 +4,110 @@ import { RecipeCard } from "@/components/RecipeCard";
 import { RecipeForm } from "@/components/RecipeForm";
 import { Plus, Coffee } from "lucide-react";
 import { cn } from "@/lib/utils";
+import * as api from "@/lib/api";
 
-interface Recipe {
+// Frontend-Modell
+type Recipe = {
   id: string;
   beanName: string;
   packageImage?: string;
   inputGrams: number;
   outputGrams: number;
   brewingTime: number;
-  grindSize: string;
+  grindSize: number;
   tasteRating: number;
   flavorNotesRating: number;
+};
+
+// Mapping Backend <-> Frontend
+function backendToFrontend(r: api.Recipe): Recipe {
+  return {
+    id: r.id ? String(r.id) : String(Date.now()),
+    beanName: r.bean_name || "",
+    packageImage: r.image || "",
+    inputGrams: r.input_grams ?? 0,
+    outputGrams: r.output_grams ?? 0,
+    brewingTime: r.brewing_time ?? 0,
+    grindSize: r.grind_size ?? 0,
+    tasteRating: r.taste_rating ?? 0,
+    flavorNotesRating: r.flavor_complexity ?? 0,
+  };
+}
+
+function frontendToBackend(r: Omit<Recipe, "id">): Omit<api.Recipe, "id"> {
+  return {
+    bean_name: r.beanName,
+    image: r.packageImage,
+    input_grams: r.inputGrams,
+    output_grams: r.outputGrams,
+    brewing_time: r.brewingTime,
+    grind_size: r.grindSize,
+    taste_rating: r.tasteRating,
+    flavor_complexity: r.flavorNotesRating,
+  };
 }
 
 const Index = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load recipes from localStorage on mount
+  // Backend laden
   useEffect(() => {
-    const savedRecipes = localStorage.getItem('espresso-recipes');
-    if (savedRecipes) {
-      setRecipes(JSON.parse(savedRecipes));
-    }
+    setLoading(true);
+    api
+      .fetchRecipes()
+      .then((data) => setRecipes(data.map(backendToFrontend)))
+      .catch(() => setError("Fehler beim Laden der Rezepte vom Server."))
+      .finally(() => setLoading(false));
   }, []);
 
-  // Save recipes to localStorage whenever recipes change
-  useEffect(() => {
-    localStorage.setItem('espresso-recipes', JSON.stringify(recipes));
-  }, [recipes]);
-
-  const handleSaveRecipe = (recipeData: Omit<Recipe, 'id'>) => {
-    if (editingRecipe) {
-      // Update existing recipe
-      setRecipes(prev => prev.map(recipe => 
-        recipe.id === editingRecipe.id 
-          ? { ...recipeData, id: editingRecipe.id }
-          : recipe
-      ));
+  const handleSaveRecipe = async (recipeData: Omit<Recipe, "id">) => {
+    setLoading(true);
+    setError(null);
+    try {
+      if (editingRecipe) {
+        // Update
+        const updated = await api.updateRecipe(
+          Number(editingRecipe.id),
+          frontendToBackend(recipeData)
+        );
+        setRecipes((prev) =>
+          prev.map((r) =>
+            r.id === editingRecipe.id ? backendToFrontend(updated) : r
+          )
+        );
+      } else {
+        // Neu anlegen
+        const newRecipe = await api.createRecipe(frontendToBackend(recipeData));
+        setRecipes((prev) => [backendToFrontend(newRecipe), ...prev]);
+      }
+      setShowForm(false);
       setEditingRecipe(null);
-    } else {
-      // Add new recipe
-      const newRecipe: Recipe = {
-        ...recipeData,
-        id: Date.now().toString()
-      };
-      setRecipes(prev => [newRecipe, ...prev]);
+    } catch (e) {
+      setError(
+        editingRecipe
+          ? "Fehler beim Aktualisieren des Rezepts."
+          : "Fehler beim Anlegen des Rezepts."
+      );
+    } finally {
+      setLoading(false);
     }
-    setShowForm(false);
   };
 
-  const handleDeleteRecipe = (recipeId: string) => {
-    setRecipes(prev => prev.filter(recipe => recipe.id !== recipeId));
+  const handleDeleteRecipe = async (recipeId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await api.deleteRecipe(Number(recipeId));
+      setRecipes((prev) => prev.filter((recipe) => recipe.id !== recipeId));
+    } catch (e) {
+      setError("Fehler beim Löschen des Rezepts.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEditRecipe = (recipe: Recipe) => {
@@ -72,7 +123,7 @@ const Index = () => {
   if (showForm) {
     return (
       <div className="min-h-screen bg-gradient-subtle p-4 flex items-center justify-center">
-        <RecipeForm 
+        <RecipeForm
           onSave={handleSaveRecipe}
           onCancel={handleCancelForm}
           initialRecipe={editingRecipe || undefined}
@@ -90,7 +141,7 @@ const Index = () => {
             <div className="flex items-center gap-2">
               <Coffee className="h-6 w-6 text-coffee-medium" />
               <h1 className="text-xl font-semibold text-foreground">
-                Espresso Recipes
+                Espressolist
               </h1>
             </div>
             <Button
@@ -109,7 +160,10 @@ const Index = () => {
 
       {/* Content */}
       <main className="container mx-auto px-4 py-6">
-        {recipes.length === 0 ? (
+        {error && <div className="text-red-500 mb-4">{error}</div>}
+        {loading ? (
+          <div className="text-center py-12">Lade...</div>
+        ) : recipes.length === 0 ? (
           <div className="text-center py-12">
             <Coffee className="h-16 w-16 text-coffee-light mx-auto mb-4" />
             <h2 className="text-2xl font-semibold text-foreground mb-2">
