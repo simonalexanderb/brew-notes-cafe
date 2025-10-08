@@ -41,8 +41,8 @@ export const RecipeCard = ({
   return (
     <Card
       className={cn(
-        "overflow-hidden shadow-card hover:shadow-soft transition-all duration-300 cursor-pointer relative",
-        "border-0 bg-card/80 backdrop-blur-sm group",
+        "overflow-hidden shadow-sm transition-all duration-300 cursor-pointer relative",
+        "border-0 bg-card/70 backdrop-blur group",
         className
       )}
       onClick={onClick}

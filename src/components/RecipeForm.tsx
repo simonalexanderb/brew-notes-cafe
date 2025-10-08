@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 import imageCompression from "browser-image-compression";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,9 @@ export const RecipeForm = ({
   onCancel,
   initialRecipe,
 }: RecipeFormProps) => {
+  // Prüfen, ob Edit-Modus und keine Änderungen
+  const isEdit = Boolean(initialRecipe);
+  const [showImageDialog, setShowImageDialog] = useState(false);
   const [formData, setFormData] = useState({
     beanName: initialRecipe?.beanName || "",
     packageImage: initialRecipe?.packageImage || "",
@@ -42,6 +46,17 @@ export const RecipeForm = ({
     tasteRating: initialRecipe?.tasteRating || 0,
     flavorNotesRating: initialRecipe?.flavorNotesRating || 0,
   });
+
+  // true, wenn alle Felder gleich wie initialRecipe
+  const isPristine = isEdit && initialRecipe &&
+    formData.beanName === initialRecipe.beanName &&
+    formData.packageImage === initialRecipe.packageImage &&
+    formData.inputGrams === initialRecipe.inputGrams &&
+    formData.outputGrams === initialRecipe.outputGrams &&
+    formData.brewingTime === initialRecipe.brewingTime &&
+    formData.grindSize === initialRecipe.grindSize &&
+    formData.tasteRating === initialRecipe.tasteRating &&
+    formData.flavorNotesRating === initialRecipe.flavorNotesRating;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,6 +85,7 @@ export const RecipeForm = ({
       reader.readAsDataURL(compressed);
     }
   };
+            {/* entfernt: doppelte Deklaration formData/setFormData */}
 
   const isValid =
     formData.beanName.trim() &&
@@ -77,15 +93,27 @@ export const RecipeForm = ({
     formData.outputGrams > 0;
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-soft border-0 bg-card/95 backdrop-blur-sm">
+    <Card className="w-full max-w-3xl mx-auto shadow-sm border-0 bg-white/60 dark:bg-card/70 backdrop-blur p-2 md:p-8 transition-all relative">
+      {/* X-Button oben rechts nur bei Edit und wenn keine Änderungen */}
+      {isPristine && (
+        <button
+          type="button"
+          onClick={onCancel}
+          className="absolute right-4 top-4 z-20 text-xl text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Schließen"
+        >
+          ×
+        </button>
+      )}
       <CardHeader className="pb-4">
         <CardTitle className="text-xl font-semibold text-center">
-          {initialRecipe ? "Edit Recipe" : "New Recipe"}
+          {initialRecipe ? "Edit" : "New"}
         </CardTitle>
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Name und Bild wie gehabt */}
           <div className="space-y-2">
             <Label htmlFor="beanName">Name</Label>
             <Input
@@ -119,88 +147,126 @@ export const RecipeForm = ({
                 {formData.packageImage ? "Change Image" : "Add Image"}
               </Button>
               {formData.packageImage && (
-                <div className="aspect-[4/3] max-w-32 overflow-hidden rounded-md">
-                  <img
-                    src={formData.packageImage}
-                    alt="Package preview"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
+                  <DialogTrigger asChild>
+                    <div
+                      className="aspect-[4/3] max-w-32 overflow-hidden rounded-md cursor-zoom-in"
+                      title="Bild vergrößert anzeigen"
+                    >
+                      <img
+                        src={formData.packageImage}
+                        alt="Package preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="flex items-center justify-center bg-transparent shadow-none border-0 p-0">
+                    <img
+                      src={formData.packageImage}
+                      alt="Großansicht"
+                      className="max-h-[80vh] max-w-[90vw] rounded-lg shadow-lg border"
+                      style={{ cursor: 'zoom-out' }}
+                    />
+                    {/* X-Button nur auf Desktop anzeigen */}
+                    <button
+                      type="button"
+                      onClick={() => setShowImageDialog(false)}
+                      className="hidden sm:block absolute right-4 top-4 rounded-full bg-black/60 text-white p-2 hover:bg-black/80 focus:outline-none z-10"
+                      aria-label="Schließen"
+                    >
+                      <span style={{ fontSize: 24, lineHeight: 1 }}>×</span>
+                    </button>
+                  </DialogContent>
+                </Dialog>
               )}
             </div>
           </div>
 
-          <div className="space-y-4">
-            <TouchNumberInput
-              value={formData.inputGrams}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, inputGrams: value }))
-              }
-              label="In"
-              placeholder="18"
-              min={0}
-              max={50}
-              step={0.5}
-              unit="g"
-            />
-
-            <TouchNumberInput
-              value={formData.outputGrams}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, outputGrams: value }))
-              }
-              label="Out"
-              placeholder="36"
-              min={0}
-              max={100}
-              step={0.5}
-              unit="ml"
-            />
+          {/* In/Out nebeneinander */}
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <TouchNumberInput
+                value={formData.inputGrams}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, inputGrams: value }))
+                }
+                label="In"
+                placeholder="18"
+                min={0}
+                max={50}
+                step={0.5}
+                unit="g"
+              />
+            </div>
+            <div className="flex-1">
+              <TouchNumberInput
+                value={formData.outputGrams}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, outputGrams: value }))
+                }
+                label="Out"
+                placeholder="36"
+                min={0}
+                max={100}
+                step={0.5}
+                unit="ml"
+              />
+            </div>
           </div>
 
-          <div className="space-y-4">
-            <TouchNumberInput
-              value={formData.brewingTime}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, brewingTime: value }))
-              }
-              label="Brühzeit"
-              placeholder="28"
-              min={0}
-              max={120}
-              step={1}
-              unit="sec"
-            />
-
-            <TouchNumberInput
-              value={formData.grindSize}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, grindSize: value }))
-              }
-              label="Mahlgrad"
-              placeholder="20"
-              min={0}
-              max={50}
-              step={1}
-            />
+          {/* Brühzeit/Mahlgrad nebeneinander */}
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <TouchNumberInput
+                value={formData.brewingTime}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, brewingTime: value }))
+                }
+                label="Brühzeit"
+                placeholder="28"
+                min={0}
+                max={120}
+                step={1}
+                unit="sec"
+              />
+            </div>
+            <div className="flex-1">
+              <TouchNumberInput
+                value={formData.grindSize}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, grindSize: value }))
+                }
+                label="Mahlgrad"
+                placeholder="20"
+                min={0}
+                max={50}
+                step={1}
+              />
+            </div>
           </div>
 
-          <div className="space-y-6">
-            <CoffeeRating
-              rating={formData.tasteRating}
-              onRatingChange={(rating) =>
-                setFormData((prev) => ({ ...prev, tasteRating: rating }))
-              }
-              label="Wertung"
-            />
-
-            <CoffeeRating
-              rating={formData.flavorNotesRating}
-              onRatingChange={(rating) =>
-                setFormData((prev) => ({ ...prev, flavorNotesRating: rating }))
-              }
-              label="Geschmacksnoten"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <CoffeeRating
+                rating={formData.tasteRating}
+                onRatingChange={(rating) =>
+                  setFormData((prev) => ({ ...prev, tasteRating: rating }))
+                }
+                label="Wertung"
+              />
+            </div>
+            <div className="space-y-6">
+              <CoffeeRating
+                rating={formData.flavorNotesRating}
+                onRatingChange={(rating) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    flavorNotesRating: rating,
+                  }))
+                }
+                label="Geschmacksnoten"
+              />
+            </div>
           </div>
 
           <div className="flex gap-3 pt-4">

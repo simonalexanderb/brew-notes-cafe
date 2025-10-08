@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { RecipeCard } from "@/components/RecipeCard";
 import { RecipeForm } from "@/components/RecipeForm";
-import { Plus, Coffee } from "lucide-react";
+import { Plus, Coffee, Filter } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Popover } from "@/components/ui/popover";
+import { ExpandableSearchBar } from "@/components/ExpandableSearchBar";
 import { cn } from "@/lib/utils";
 import * as api from "@/lib/api";
 
@@ -51,7 +54,13 @@ const Index = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<{
+    wertung: number;
+    geschmacksnoten: number;
+  }>({ wertung: 0, geschmacksnoten: 0 });
   const [loading, setLoading] = useState(false);
+  const [searchbarExpanded, setSearchbarExpanded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Backend laden
@@ -132,28 +141,51 @@ const Index = () => {
     );
   }
 
+  // Filterlogik
+  const filteredRecipes = recipes.filter(
+    (r) =>
+      r.beanName.toLowerCase().includes(search.toLowerCase()) &&
+      (filter.wertung === 0 || r.tasteRating >= filter.wertung) &&
+      (filter.geschmacksnoten === 0 ||
+        r.flavorNotesRating >= filter.geschmacksnoten)
+  );
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}
       <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 mb-2 sm:mb-0">
               <Coffee className="h-6 w-6 text-coffee-medium" />
               <h1 className="text-xl font-semibold text-foreground">
                 Espressolist
               </h1>
             </div>
-            <Button
-              onClick={() => setShowForm(true)}
-              className={cn(
-                "gap-2 shadow-soft",
-                "bg-gradient-coffee hover:opacity-90 text-primary-foreground"
-              )}
-            >
-              <Plus className="h-4 w-4" />
-              New Recipe
-            </Button>
+            <div className="flex-1">
+              <ExpandableSearchBar
+                onSearch={setSearch}
+                onFilterChange={setFilter}
+                onExpandChange={setSearchbarExpanded}
+              />
+            </div>
+            {// Nur auf kleinen Bildschirmen ausblenden
+            !(
+              searchbarExpanded &&
+              typeof window !== "undefined" &&
+              window.matchMedia("(max-width: 1024px)").matches
+            ) && (
+              <Button
+                onClick={() => setShowForm(true)}
+                className={cn(
+                  "gap-2 shadow-soft",
+                  "bg-gradient-coffee hover:opacity-90 text-primary-foreground"
+                )}
+              >
+                <Plus className="h-4 w-4" />
+                New Recipe
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -163,14 +195,14 @@ const Index = () => {
         {error && <div className="text-red-500 mb-4">{error}</div>}
         {loading ? (
           <div className="text-center py-12">Lade...</div>
-        ) : recipes.length === 0 ? (
+        ) : filteredRecipes.length === 0 ? (
           <div className="text-center py-12">
             <Coffee className="h-16 w-16 text-coffee-light mx-auto mb-4" />
             <h2 className="text-2xl font-semibold text-foreground mb-2">
-              No recipes yet
+              Keine Rezepte gefunden
             </h2>
             <p className="text-muted-foreground mb-6">
-              Start by creating your first espresso recipe
+              Passe deine Suche oder Filter an.
             </p>
             <Button
               onClick={() => setShowForm(true)}
@@ -180,12 +212,12 @@ const Index = () => {
               )}
             >
               <Plus className="h-4 w-4" />
-              Create First Recipe
+              Neues Rezept
             </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {recipes.map((recipe) => (
+            {filteredRecipes.map((recipe) => (
               <RecipeCard
                 key={recipe.id}
                 recipe={recipe}

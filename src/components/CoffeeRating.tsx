@@ -24,14 +24,19 @@ export const CoffeeRating = ({
     lg: "h-6 w-6",
   };
 
-  const getIntensity = (beanIndex: number) => {
+  const getIntensity = (beanIndex: number, rating: number) => {
     if (beanIndex <= rating) {
-      const intensity = (beanIndex / 5) * 100;
-      return `hsl(25 ${Math.min(45 + intensity * 0.3, 65)}% ${Math.max(
-        20,
-        40 - intensity * 0.2
-      )}%)`;
+      // Fünf Brauntöne von sehr hell bis dunkel
+      const coffeeColors = [
+        "hsl(30, 40%, 80%)", // sehr hellbeige
+        "hsl(30, 45%, 65%)", // hellbraun
+        "hsl(30, 50%, 50%)", // mittelbraun
+        "hsl(30, 55%, 35%)", // dunkelbraun
+        "hsl(30, 60%, 25%)", // sehr dunkel
+      ];
+      return coffeeColors[beanIndex - 1];
     }
+    // Graue/neutralisierte Tasse für nicht-aktive Bewertung
     return "hsl(var(--muted-foreground))";
   };
 
@@ -73,8 +78,8 @@ export const CoffeeRating = ({
               !readonly && "hover:scale-110"
             )}
             style={{
-              color: getIntensity(bean),
-              fill: bean <= rating ? getIntensity(bean) : "transparent",
+              color: getIntensity(bean, rating),
+              fill: bean <= rating ? getIntensity(bean, rating) : "transparent",
             }}
             onClick={() => !readonly && onRatingChange?.(bean)}
           />
