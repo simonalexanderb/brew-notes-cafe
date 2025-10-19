@@ -39,7 +39,7 @@ export const CoffeeMugRating = ({
     "#c9a97a",
     "#a97c50",
     "#7c4f2b",
-    "#4b2c13", // dunkelblau
+    "#4b2c13", // dunkel
   ];
   const getColor = (bean: number) => {
     if (colorMode === "flavor") return flavorColors[bean - 1] || flavorColors[0];
