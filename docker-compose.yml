@@ -4,7 +4,7 @@ services:
     container_name: brew-notes-backend
     restart: always
     ports:
-      - "${BACKEND_PORT:-8000}:8000"
+      - "${BACKEND_PORT:-8001}:8000"
     volumes:
       - ./python-backend/coffee.db:/app/coffee.db
 
@@ -13,6 +13,6 @@ services:
     container_name: brew-notes-frontend
     restart: always
     ports:
-      - "${FRONTEND_PORT:-8080}:80"
+      - "${FRONTEND_PORT:-8081}:80"
     depends_on:
       - backend

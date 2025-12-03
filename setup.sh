@@ -32,13 +32,14 @@ if [ -f .env ]; then
     export $(cat .env | grep -v '^#' | xargs)
 fi
 
-# Set default ports if not specified
-FRONTEND_PORT=${FRONTEND_PORT:-8080}
-BACKEND_PORT=${BACKEND_PORT:-8000}
+# Set default ports if not specified (Defaulting to 8081/8001 to avoid conflict with existing 8080 services)
+FRONTEND_PORT=${FRONTEND_PORT:-8081}
+BACKEND_PORT=${BACKEND_PORT:-8001}
 
 echo "🚀 Building and starting containers..."
 echo "   Frontend will be available on port: $FRONTEND_PORT"
 echo "   Backend will be available on port: $BACKEND_PORT"
+echo "   Auto-start policy: restart=always (Containers will start automatically on boot)"
 
 # Run docker-compose
 if docker compose version &> /dev/null; then
@@ -52,6 +53,7 @@ if [ $? -eq 0 ]; then
     echo "✅ Installation successful!"
     echo "🎉 Open http://localhost:$FRONTEND_PORT in your browser to start brewing!"
     echo "📡 Backend API: http://localhost:$BACKEND_PORT"
+    echo "🔄 Containers are configured to start automatically on system boot."
 else
     echo ""
     echo "❌ Something went wrong. Please check the logs above."
