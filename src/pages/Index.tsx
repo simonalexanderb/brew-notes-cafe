@@ -6,6 +6,7 @@ import { Plus, Coffee, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Popover } from "@/components/ui/popover";
 import { ExpandableSearchBar } from "@/components/ExpandableSearchBar";
+import { BrewingSession } from "@/components/BrewingSession";
 import { cn } from "@/lib/utils";
 import * as api from "@/lib/api";
 
@@ -54,6 +55,7 @@ const Index = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null);
+  const [brewingRecipe, setBrewingRecipe] = useState<Recipe | null>(null);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<{
     wertung: number;
@@ -141,6 +143,15 @@ const Index = () => {
     );
   }
 
+  if (brewingRecipe) {
+    return (
+      <BrewingSession
+        recipe={brewingRecipe}
+        onClose={() => setBrewingRecipe(null)}
+      />
+    );
+  }
+
   // Filterlogik
   const filteredRecipes = recipes.filter(
     (r) =>
@@ -223,6 +234,7 @@ const Index = () => {
                 recipe={recipe}
                 onClick={() => handleEditRecipe(recipe)}
                 onDelete={() => handleDeleteRecipe(recipe.id)}
+                onStartBrew={() => setBrewingRecipe(recipe)}
               />
             ))}
           </div>

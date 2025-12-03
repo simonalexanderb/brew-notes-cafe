@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CoffeeRating } from "./CoffeeRating";
-import { Timer, Coffee, Scale, Trash2, MoreVertical } from "lucide-react";
+import { Timer, Coffee, Scale, Trash2, MoreVertical, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -21,6 +21,7 @@ interface RecipeCardProps {
   recipe: Recipe;
   onClick?: () => void;
   onDelete?: () => void;
+  onStartBrew?: () => void;
   className?: string;
 }
 
@@ -28,6 +29,7 @@ export const RecipeCard = ({
   recipe,
   onClick,
   onDelete,
+  onStartBrew,
   className,
 }: RecipeCardProps) => {
   const [showActions, setShowActions] = useState(false);
@@ -59,6 +61,8 @@ export const RecipeCard = ({
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
+
+
         {recipe.packageImage && (
           <div className="aspect-[4/3] overflow-hidden bg-coffee-light">
             <img
@@ -69,10 +73,29 @@ export const RecipeCard = ({
           </div>
         )}
 
+        {/* Extra spacing after image */}
+        <div className="h-2" />
+
         <div className="p-4 space-y-3">
-          <h3 className="font-semibold text-lg text-foreground truncate">
-            {recipe.beanName}
-          </h3>
+          {/* Heading with Play button */}
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-semibold text-lg text-foreground truncate flex-1">
+              {recipe.beanName}
+            </h3>
+            <Button
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onStartBrew?.();
+              }}
+              className={cn(
+                "gap-1.5 shadow-soft shrink-0",
+                "bg-gradient-coffee hover:opacity-90 text-primary-foreground"
+              )}
+            >
+              <Play className="h-3.5 w-3.5" />
+            </Button>
+          </div>
 
           <div className="grid grid-cols-4 gap-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
