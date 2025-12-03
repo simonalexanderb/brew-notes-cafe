@@ -26,7 +26,19 @@ if [ ! -f "$DB_FILE" ]; then
     touch "$DB_FILE"
 fi
 
+# Load environment variables if .env exists
+if [ -f .env ]; then
+    echo "📝 Loading custom port configuration from .env"
+    export $(cat .env | grep -v '^#' | xargs)
+fi
+
+# Set default ports if not specified
+FRONTEND_PORT=${FRONTEND_PORT:-8080}
+BACKEND_PORT=${BACKEND_PORT:-8000}
+
 echo "🚀 Building and starting containers..."
+echo "   Frontend will be available on port: $FRONTEND_PORT"
+echo "   Backend will be available on port: $BACKEND_PORT"
 
 # Run docker-compose
 if docker compose version &> /dev/null; then
@@ -38,7 +50,8 @@ fi
 if [ $? -eq 0 ]; then
     echo ""
     echo "✅ Installation successful!"
-    echo "🎉 Open http://localhost:8080 in your browser to start brewing!"
+    echo "🎉 Open http://localhost:$FRONTEND_PORT in your browser to start brewing!"
+    echo "📡 Backend API: http://localhost:$BACKEND_PORT"
 else
     echo ""
     echo "❌ Something went wrong. Please check the logs above."
