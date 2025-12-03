@@ -66,4 +66,4 @@ If you want to contribute or run without Docker:
 
 ## 📄 License
 
-This project is licensed under the MIT License. Feel free to use, modify, and distribute it.
+This project is licensed under the MIT License. Feel free to use, modify, and distribute it.  
