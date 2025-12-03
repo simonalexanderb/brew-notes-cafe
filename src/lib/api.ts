@@ -20,7 +20,7 @@ export interface Recipe {
   flavor_complexity: number;
 }
 
-const API_URL = "http://192.168.178.58:8000/api/recipes";
+const API_URL = "/api/recipes";
 
 export async function fetchRecipes(): Promise<Recipe[]> {
   const res = await fetch(API_URL);

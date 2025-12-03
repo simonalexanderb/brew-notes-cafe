@@ -1,0 +1,18 @@
+services:
+  backend:
+    build: ./python-backend
+    container_name: brew-notes-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./python-backend/coffee.db:/app/coffee.db
+
+  frontend:
+    build: .
+    container_name: brew-notes-frontend
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend

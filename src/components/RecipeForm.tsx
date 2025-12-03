@@ -33,8 +33,6 @@ export const RecipeForm = ({
   onCancel,
   initialRecipe,
 }: RecipeFormProps) => {
-  // Prüfen, ob Edit-Modus und keine Änderungen
-  const isEdit = Boolean(initialRecipe);
   const [showImageDialog, setShowImageDialog] = useState(false);
   const [formData, setFormData] = useState({
     beanName: initialRecipe?.beanName || "",
@@ -46,17 +44,6 @@ export const RecipeForm = ({
     tasteRating: initialRecipe?.tasteRating || 0,
     flavorNotesRating: initialRecipe?.flavorNotesRating || 0,
   });
-
-  // true, wenn alle Felder gleich wie initialRecipe
-  const isPristine = isEdit && initialRecipe &&
-    formData.beanName === initialRecipe.beanName &&
-    formData.packageImage === initialRecipe.packageImage &&
-    formData.inputGrams === initialRecipe.inputGrams &&
-    formData.outputGrams === initialRecipe.outputGrams &&
-    formData.brewingTime === initialRecipe.brewingTime &&
-    formData.grindSize === initialRecipe.grindSize &&
-    formData.tasteRating === initialRecipe.tasteRating &&
-    formData.flavorNotesRating === initialRecipe.flavorNotesRating;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,7 +72,6 @@ export const RecipeForm = ({
       reader.readAsDataURL(compressed);
     }
   };
-            {/* entfernt: doppelte Deklaration formData/setFormData */}
 
   const isValid =
     formData.beanName.trim() &&
@@ -93,18 +79,7 @@ export const RecipeForm = ({
     formData.outputGrams > 0;
 
   return (
-    <Card className="w-full max-w-3xl mx-auto shadow-sm border-0 bg-white/60 dark:bg-card/70 backdrop-blur p-2 md:p-8 transition-all relative">
-      {/* X-Button oben rechts nur bei Edit und wenn keine Änderungen */}
-      {isPristine && (
-        <button
-          type="button"
-          onClick={onCancel}
-          className="absolute right-4 top-4 z-20 text-xl text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Schließen"
-        >
-          ×
-        </button>
-      )}
+    <Card className="w-full max-w-3xl mx-auto shadow-sm border-0 bg-white/60 dark:bg-card/70 backdrop-blur p-2 md:p-8 transition-all">
       <CardHeader className="pb-4">
         <CardTitle className="text-xl font-semibold text-center">
           {initialRecipe ? "Edit" : "New"}
