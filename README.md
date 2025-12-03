@@ -1,7 +1,5 @@
 # Brew Notes Cafe ☕
 
-![Brew Notes Cafe Screenshot](assets/screenshot.png)
-
 **Brew Notes Cafe** is a modern, elegant application for tracking your coffee brewing recipes. Whether you're dialing in a new espresso bean or perfecting your V60 pour-over, this app helps you log every detail to achieve the perfect cup.
 
 ## ✨ Features
