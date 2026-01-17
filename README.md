@@ -34,13 +34,10 @@
 </div>
 
 <div align="center">
-  <img src="assets/screen_1.png" alt="Detail View" width="45%" />
-  <img src="assets/screen_2.png" alt="Filter Brewing" width="45%" />
-</div>
-
-<div align="center">
-  <img src="assets/screen_3.png" alt="Aroma Radar" width="45%" />
-  <img src="assets/screen_4.png" alt="Mobile View" width="45%" />
+  <img src="assets/screen_1.png" alt="Detail View" width="100%" style="padding-top: 25px;" />
+  <img src="assets/screen_2.png" alt="Filter Brewing" width="100%" style="padding-top: 25px;" />
+  <img src="assets/screen_3.png" alt="Aroma Radar" width="100%" style="padding-top: 25px;" />
+  <img src="assets/screen_4.png" alt="Mobile View" width="100%" style="padding-top: 25px;" />
 </div>
 
 <br />
