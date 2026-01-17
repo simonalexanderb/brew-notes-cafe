@@ -4,15 +4,32 @@
 
 ## ✨ Features
 
-- **Recipe Tracking**: Log input weight, output weight, grind size, brewing time, and more.
-- **Taste Rating**: Rate your brews and note flavor complexity.
-- **Bean Management**: Keep track of different coffee beans.
-- **Responsive Design**: Works beautifully on desktop, tablet, and mobile.
-- **Privacy Focused**: All data is stored locally on your device (or server).
+### ☕ Dual Brewing Modes
+- **Espresso Mode**: Track precise inputs, outputs, and extraction times.
+- **Filter Mode**: Dedicated interface for Pour-Over/Filter brewing with support for:
+  - Blooming Phase tracking (Time & Water weight)
+  - Total Brew Time monitoring
+  - Customizable preparation metrics (Coffee, Grind Size, Water Temp)
+
+### 📊 Advanced Analysis
+- **Aroma Radar**: Visualize your coffee's flavor profile (Fragrance, Aroma, Acidity, Sweetness, Body, etc.) with an interactive radar chart.
+- **Taste Tags**: Quickly tag brews with flavor notes (e.g., "Berry", "Chocolate", "Nutty").
+- **Rating System**: 10-point scales for overall taste and flavor complexity.
+
+### ⏱️ Smart Brewing Assistant
+- **Interactive Timer**: Precision timer with haptic feedback.
+- **Split Views**: Visual guidance for blooming and total brewing phases.
+- **Wake Lock**: Keeps your screen awake during brewing sessions so you never lose track.
+- **Auto-Calculations**: Automatically suggests blooming water weight (2x coffee weight).
+
+### 📱 Modern UI/UX
+- **Recipe Cards**: Beautiful card layouts displaying key metrics and flavor profiles at a glance.
+- **Mobile First**: Optimized touch controls, including custom number pads and time inputs.
+- **Dark Mode**: Sleek interface designed for any lighting condition.
 
 ## 🛠 Tech Stack
 
-- **Frontend**: React, Vite, Tailwind CSS, shadcn/ui
+- **Frontend**: React, Vite, Tailwind CSS, shadcn/ui, Framer Motion, Recharts
 - **Backend**: Python (FastAPI), SQLite
 - **Containerization**: Docker, Docker Compose, Nginx
 
