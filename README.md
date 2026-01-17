@@ -27,6 +27,24 @@
 - **Mobile First**: Optimized touch controls, including custom number pads and time inputs.
 - **Dark Mode**: Sleek interface designed for any lighting condition.
 
+## 📸 Screenshots
+
+<div align="center">
+  <img src="assets/screen_overview.png" alt="App Overview" width="800" />
+</div>
+
+<div align="center">
+  <img src="assets/screen_1.png" alt="Detail View" width="45%" />
+  <img src="assets/screen_2.png" alt="Filter Brewing" width="45%" />
+</div>
+
+<div align="center">
+  <img src="assets/screen_3.png" alt="Aroma Radar" width="45%" />
+  <img src="assets/screen_4.png" alt="Mobile View" width="45%" />
+</div>
+
+<br />
+
 ## 🛠 Tech Stack
 
 - **Frontend**: React, Vite, Tailwind CSS, shadcn/ui, Framer Motion, Recharts
